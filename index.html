@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Advanced Salary Increase Calculator</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    html {
+      scroll-behavior: smooth;
+    }
+    body {
+      font-family: 'Inter', sans-serif;
+      position: relative;
+    }
+
+    /* --- Combined Background Effects --- */
+    .background-gradient {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100vh;
+        z-index: -2; /* Layer furthest back */
+        background: linear-gradient(-45deg, #ee7752, #e73c7e, #23a6d5, #23d5ab);
+        background-size: 400% 400%;
+        animation: gradientBG 15s ease infinite;
+    }
+
+    @keyframes gradientBG {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+
+    .background-shapes {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100vh;
+        z-index: -1; /* Above gradient, below content */
+        overflow: hidden;
+    }
+
+    .shapes li{
+        position: absolute;
+        display: block;
+        list-style: none;
+        width: 20px;
+        height: 20px;
+        background: rgba(255, 255, 255, 0.1); /* Reduced opacity for subtlety */
+        animation: animateShapes 25s linear infinite;
+        bottom: -150px;
+    }
+
+    .shapes li:nth-child(1){ left: 25%; width: 80px; height: 80px; animation-delay: 0s; }
+    .shapes li:nth-child(2){ left: 10%; width: 20px; height: 20px; animation-delay: 2s; animation-duration: 12s; border-radius: 50%; }
+    .shapes li:nth-child(3){ left: 70%; width: 20px; height: 20px; animation-delay: 4s; }
+    .shapes li:nth-child(4){ left: 40%; width: 60px; height: 60px; animation-delay: 0s; animation-duration: 18s; }
+    .shapes li:nth-child(5){ left: 65%; width: 20px; height: 20px; animation-delay: 0s; border-radius: 50%; }
+    .shapes li:nth-child(6){ left: 85%; width: 110px; height: 110px; animation-delay: 3s; }
+    .shapes li:nth-child(7){ left: 15%; width: 150px; height: 150px; animation-delay: 7s; }
+    .shapes li:nth-child(8){ left: 50%; width: 25px; height: 25px; animation-delay: 15s; animation-duration: 45s; border-radius: 50%; }
+    
+    @keyframes animateShapes {
+        0%{ transform: translateY(0) rotate(0deg); opacity: 1; }
+        100%{ transform: translateY(-100vh) rotate(360deg); opacity: 0; }
+    }
+
+    /* --- Border Lightning Effect --- */
+    .lightning-border-box {
+      position: relative;
+      background: transparent;
+      border-radius: 1.1rem;
+      overflow: hidden;
+      z-index: 10;
+    }
+
+    .lightning-border-box::before {
+        content: '';
+        position: absolute;
+        top: 0; left: 0; right: 0; bottom: 0;
+        border: 2px solid transparent;
+        border-radius: 1.1rem;
+        background: linear-gradient(45deg, #03A9F4, #E91E63) border-box;
+        -webkit-mask: linear-gradient(#fff 0 0) padding-box, linear-gradient(#fff 0 0);
+        -webkit-mask-composite: destination-out;
+        mask-composite: exclude;
+        animation: rotate-border 4s linear infinite;
+    }
+    
+    @keyframes rotate-border {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+    }
+
+    .pulse-button {
+        animation: pulse 2s infinite;
+    }
+    @keyframes pulse {
+        0% { box-shadow: 0 0 0 0 rgba(59, 130, 246, 0.7); }
+        70% { box-shadow: 0 0 0 10px rgba(59, 130, 246, 0); }
+        100% { box-shadow: 0 0 0 0 rgba(59, 130, 246, 0); }
+    }
+  </style>
+</head>
+<body class="flex items-center justify-center min-h-screen p-4">
+
+  <div class="background-gradient"></div>
+  <div class="background-shapes">
+      <ul class="shapes">
+        <li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li>
+      </ul>
+  </div>
+
+  <div class="w-full max-w-2xl z-10 my-8">
+      <div class="lightning-border-box shadow-2xl">
+          <div class="main-card bg-white/80 backdrop-blur-md p-6 md:p-8 rounded-xl">
+            <header class="text-center mb-8">
+                <h1 class="text-3xl md:text-4xl font-extrabold text-gray-900">Salary Increase Calculator</h1>
+                <p class="text-gray-700 mt-2">Calculate your new salary with a detailed allowance breakdown.</p>
+            </header>
+        
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+              <!-- Input Section -->
+              <div class="space-y-6">
+                <div>
+                    <label for="basicPay" class="block text-sm font-bold text-gray-700 mb-2">Current Basic Pay</label>
+                    <input type="number" id="basicPay" placeholder="e.g., 50000" class="w-full p-3 border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 transition">
+                </div>
+        
+                <div>
+                    <h3 class="text-lg font-bold text-gray-800 mb-3">Allowances (% of Basic Pay)</h3>
+                    <div id="allowances-container" class="space-y-3">
+                      <div class="allowance-group flex items-center gap-2">
+                        <input type="text" placeholder="Allowance Name" value="Adhoc Relief" class="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-400 transition">
+                        <input type="number" placeholder="%" value="30" class="w-24 p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-400 transition">
+                        <button onclick="removeAllowance(this)" class="bg-red-500 text-white w-9 h-9 rounded-lg flex items-center justify-center hover:bg-red-600 transition shadow-sm">&times;</button>
+                      </div>
+                       <div class="allowance-group flex items-center gap-2">
+                        <input type="text" placeholder="Allowance Name" value="DRA" class="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-400 transition">
+                        <input type="number" placeholder="%" value="10" class="w-24 p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-400 transition">
+                        <button onclick="removeAllowance(this)" class="bg-red-500 text-white w-9 h-9 rounded-lg flex items-center justify-center hover:bg-red-600 transition shadow-sm">&times;</button>
+                      </div>
+                    </div>
+                     <button onclick="addAllowance()" class="w-full mt-4 bg-blue-100 text-blue-800 font-semibold py-2 px-4 rounded-lg hover:bg-blue-200 transition flex items-center justify-center gap-2">
+                        <i class="fas fa-plus-circle"></i> Add Allowance
+                    </button>
+                </div>
+              </div>
+        
+              <!-- Result Section -->
+              <div id="result-section">
+                <h3 class="text-lg font-bold text-gray-800 mb-3 text-center">Calculation Result</h3>
+                <div id="result-container" class="bg-gray-50/80 p-4 rounded-lg min-h-[200px] border border-dashed">
+                    <p class="text-gray-500 text-center pt-16">Your salary breakdown will appear here.</p>
+                </div>
+                <div id="error-message" class="mt-3 text-center text-white font-semibold bg-red-500 rounded-md p-2 shadow-lg" style="display: none;"></div>
+              </div>
+            </div>
+            
+            <div class="mt-8 text-center space-y-4">
+                <button onclick="calculateSalary()" class="pulse-button bg-blue-600 text-white font-bold py-3 px-10 rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-4 focus:ring-blue-300 transition-all duration-300 transform hover:scale-105 shadow-xl">
+                    <i class="fas fa-calculator mr-2"></i> Calculate
+                </button>
+                <div id="scroll-button-container"></div>
+            </div>
+          </div>
+      </div>
+      <footer class="text-center text-sm text-white/70 py-4">
+          Calculator designed for Matiullah
+      </footer>
+  </div>
+
+
+  <script>
+    function addAllowance() {
+      const container = document.getElementById("allowances-container");
+      const group = document.createElement("div");
+      group.className = "allowance-group flex items-center gap-2";
+      group.innerHTML = `
+        <input type="text" placeholder="Allowance Name" class="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-400 transition">
+        <input type="number" placeholder="%" class="w-24 p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-400 transition">
+        <button onclick="removeAllowance(this)" class="bg-red-500 text-white w-9 h-9 rounded-lg flex items-center justify-center hover:bg-red-600 transition shadow-sm">&times;</button>
+      `;
+      container.appendChild(group);
+    }
+
+    function removeAllowance(button) {
+      button.parentElement.remove();
+    }
+    
+    function calculateSalary() {
+      const basicPayInput = document.getElementById("basicPay");
+      const basicPay = parseFloat(basicPayInput.value);
+      const resultContainer = document.getElementById("result-container");
+      const errorDiv = document.getElementById("error-message");
+      const scrollBtnContainer = document.getElementById('scroll-button-container');
+
+      // Clear previous results and errors
+      resultContainer.innerHTML = '<p class="text-gray-500 text-center pt-16">Your salary breakdown will appear here.</p>';
+      resultContainer.classList.remove('border-green-300', 'bg-green-50/80');
+      errorDiv.style.display = 'none';
+      scrollBtnContainer.innerHTML = ''; // Clear scroll button
+      basicPayInput.classList.remove('border-red-500');
+
+      if (isNaN(basicPay) || basicPay <= 0) {
+        errorDiv.innerText = "Please enter a valid Basic Pay amount.";
+        errorDiv.style.display = 'block';
+        basicPayInput.classList.add('border-red-500');
+        basicPayInput.focus();
+        return;
+      }
+
+      const allowanceGroups = document.querySelectorAll(".allowance-group");
+      let totalAllowanceAmount = 0;
+      let allowanceDetails = '';
+
+      allowanceGroups.forEach(group => {
+        const nameInput = group.querySelector("input[type='text']");
+        const percentInput = group.querySelector("input[type='number']");
+        
+        const name = nameInput.value.trim() || "Unnamed Allowance";
+        const percent = parseFloat(percentInput.value);
+
+        if (!isNaN(percent) && percent > 0) {
+          const allowanceAmount = (basicPay * percent) / 100;
+          totalAllowanceAmount += allowanceAmount;
+          allowanceDetails += `
+            <div class="flex justify-between items-center text-sm">
+              <p class="text-gray-600">${name} (${percent}%)</p>
+              <p class="font-mono text-gray-800">${allowanceAmount.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}</p>
+            </div>
+          `;
+        }
+      });
+      
+      const newGrossSalary = basicPay + totalAllowanceAmount;
+      
+      resultContainer.classList.add('border-green-300', 'bg-green-50/80');
+      resultContainer.innerHTML = `
+        <div class="result-card space-y-3">
+            <div class="flex justify-between items-center pb-2 border-b border-gray-300">
+                <p class="font-semibold text-gray-700">Basic Pay</p>
+                <p class="font-bold font-mono text-lg text-gray-900">${basicPay.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}</p>
+            </div>
+            
+            <div class="space-y-2 py-1">
+                <p class="font-semibold text-gray-700 text-sm">Allowances:</p>
+                ${allowanceDetails || '<p class="text-gray-500 text-xs text-center">No valid allowances entered.</p>'}
+            </div>
+
+            <div class="flex justify-between items-center pt-2 border-t border-gray-300">
+                <p class="font-semibold text-gray-700">Total Increase</p>
+                <p class="font-bold font-mono text-lg text-green-600">+${totalAllowanceAmount.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}</p>
+            </div>
+            
+            <div class="bg-blue-600 text-white p-3 rounded-lg mt-3 shadow-lg">
+                <div class="flex justify-between items-center">
+                    <p class="font-bold text-lg">New Gross Salary</p>
+                    <p class="font-extrabold font-mono text-xl">Rs. ${newGrossSalary.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}</p>
+                </div>
+            </div>
+        </div>
+      `;
+
+      // Add scroll to result button
+      scrollBtnContainer.innerHTML = `
+        <a href="#result-section" class="inline-block bg-gray-700 text-white font-semibold py-2 px-4 rounded-lg hover:bg-gray-800 transition">
+            <i class="fas fa-arrow-down mr-2"></i> Scroll to Result
+        </a>
+      `;
+    }
+  </script>
+</body>
+</html>
