@@ -3,277 +3,161 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Advanced Salary Increase Calculator</title>
+  <title>Starlight Financial Suite by Matiullah</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <style>
-    html {
-      scroll-behavior: smooth;
-    }
+    html { scroll-behavior: smooth; }
     body {
       font-family: 'Inter', sans-serif;
-      position: relative;
+      background-color: #000000;
+      color: #E2E8F0;
+      overflow-x: hidden;
     }
 
-    /* --- Combined Background Effects --- */
-    .background-gradient {
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100vh;
-        z-index: -2; /* Layer furthest back */
-        background: linear-gradient(-45deg, #ee7752, #e73c7e, #23a6d5, #23d5ab);
-        background-size: 400% 400%;
-        animation: gradientBG 15s ease infinite;
-    }
+    /* --- UI & Card Styles --- */
+    .card-background { background-color: rgba(15, 23, 42, 0.85); backdrop-filter: blur(14px); border: 1px solid rgba(255, 255, 255, 0.1); }
+    .input-field { background-color: rgba(30, 41, 59, 0.7); border: 1px solid #475569; color: #F8FAFC; }
+    .input-field:focus { border-color: #38BDF8; box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.3), 0 0 15px rgba(56, 189, 248, 0.2); outline: none; }
+    .nav-button { color: #94A3B8; }
+    .nav-button.active { color: #FFF; border-color: #38BDF8; background-color: rgba(56, 189, 248, 0.1); }
+    .logo-bg { stroke: #38BDF8; fill: rgba(56, 189, 248, 0.1); }
+    .logo-text { fill: #E2E8F0; }
+    .calc-button { background-color: #2563eb; box-shadow: 0 0 20px rgba(37, 99, 235, 0.5); }
+    .calc-button:hover { background-color: #1d4ed8; }
 
-    @keyframes gradientBG {
-      0% { background-position: 0% 50%; }
-      50% { background-position: 100% 50%; }
-      100% { background-position: 0% 50%; }
-    }
-
-    .background-shapes {
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100vh;
-        z-index: -1; /* Above gradient, below content */
-        overflow: hidden;
-    }
-
-    .shapes li{
-        position: absolute;
-        display: block;
-        list-style: none;
-        width: 20px;
-        height: 20px;
-        background: rgba(255, 255, 255, 0.1); /* Reduced opacity for subtlety */
-        animation: animateShapes 25s linear infinite;
-        bottom: -150px;
-    }
-
-    .shapes li:nth-child(1){ left: 25%; width: 80px; height: 80px; animation-delay: 0s; }
-    .shapes li:nth-child(2){ left: 10%; width: 20px; height: 20px; animation-delay: 2s; animation-duration: 12s; border-radius: 50%; }
-    .shapes li:nth-child(3){ left: 70%; width: 20px; height: 20px; animation-delay: 4s; }
-    .shapes li:nth-child(4){ left: 40%; width: 60px; height: 60px; animation-delay: 0s; animation-duration: 18s; }
-    .shapes li:nth-child(5){ left: 65%; width: 20px; height: 20px; animation-delay: 0s; border-radius: 50%; }
-    .shapes li:nth-child(6){ left: 85%; width: 110px; height: 110px; animation-delay: 3s; }
-    .shapes li:nth-child(7){ left: 15%; width: 150px; height: 150px; animation-delay: 7s; }
-    .shapes li:nth-child(8){ left: 50%; width: 25px; height: 25px; animation-delay: 15s; animation-duration: 45s; border-radius: 50%; }
+    /* --- ANIMATION DEFINITIONS --- */
+    @keyframes twinkle { 0%, 100% { opacity: 0; transform: scale(0.5); } 50% { opacity: 1; transform: scale(1); } }
     
-    @keyframes animateShapes {
-        0%{ transform: translateY(0) rotate(0deg); opacity: 1; }
-        100%{ transform: translateY(-100vh) rotate(360deg); opacity: 0; }
-    }
+    /* General UI */
+    .primary-button { transition: all 0.2s ease-in-out; }
+    .primary-button:active { transform: scale(0.95); }
+    .calculator-page { display: none; }
+    .calculator-page.active { display: block; animation: fadeIn 0.5s ease-in-out; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
-    /* --- Border Lightning Effect --- */
-    .lightning-border-box {
-      position: relative;
-      background: transparent;
-      border-radius: 1.1rem;
-      overflow: hidden;
-      z-index: 10;
-    }
-
-    .lightning-border-box::before {
-        content: '';
-        position: absolute;
-        top: 0; left: 0; right: 0; bottom: 0;
-        border: 2px solid transparent;
-        border-radius: 1.1rem;
-        background: linear-gradient(45deg, #03A9F4, #E91E63) border-box;
-        -webkit-mask: linear-gradient(#fff 0 0) padding-box, linear-gradient(#fff 0 0);
-        -webkit-mask-composite: destination-out;
-        mask-composite: exclude;
-        animation: rotate-border 4s linear infinite;
-    }
-    
-    @keyframes rotate-border {
-        0% { transform: rotate(0deg); }
-        100% { transform: rotate(360deg); }
-    }
-
-    .pulse-button {
-        animation: pulse 2s infinite;
-    }
-    @keyframes pulse {
-        0% { box-shadow: 0 0 0 0 rgba(59, 130, 246, 0.7); }
-        70% { box-shadow: 0 0 0 10px rgba(59, 130, 246, 0); }
-        100% { box-shadow: 0 0 0 0 rgba(59, 130, 246, 0); }
-    }
   </style>
 </head>
-<body class="flex items-center justify-center min-h-screen p-4">
+<body class="min-h-screen flex items-center justify-center p-4">
+  
+  <div id="background-animation-container" class="fixed top-0 left-0 w-full h-full z-[-1] pointer-events-none"></div>
 
-  <div class="background-gradient"></div>
-  <div class="background-shapes">
-      <ul class="shapes">
-        <li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li>
-      </ul>
-  </div>
-
-  <div class="w-full max-w-2xl z-10 my-8">
-      <div class="lightning-border-box shadow-2xl">
-          <div class="main-card bg-white/80 backdrop-blur-md p-6 md:p-8 rounded-xl">
-            <header class="text-center mb-8">
-                <h1 class="text-3xl md:text-4xl font-extrabold text-gray-900">Salary Increase Calculator</h1>
-                <p class="text-gray-700 mt-2">Calculate your new salary with a detailed allowance breakdown.</p>
-            </header>
-        
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-              <!-- Input Section -->
-              <div class="space-y-6">
-                <div>
-                    <label for="basicPay" class="block text-sm font-bold text-gray-700 mb-2">Current Basic Pay</label>
-                    <input type="number" id="basicPay" placeholder="e.g., 50000" class="w-full p-3 border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 transition">
-                </div>
-        
-                <div>
-                    <h3 class="text-lg font-bold text-gray-800 mb-3">Allowances (% of Basic Pay)</h3>
-                    <div id="allowances-container" class="space-y-3">
-                      <div class="allowance-group flex items-center gap-2">
-                        <input type="text" placeholder="Allowance Name" value="Adhoc Relief" class="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-400 transition">
-                        <input type="number" placeholder="%" value="30" class="w-24 p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-400 transition">
-                        <button onclick="removeAllowance(this)" class="bg-red-500 text-white w-9 h-9 rounded-lg flex items-center justify-center hover:bg-red-600 transition shadow-sm">&times;</button>
-                      </div>
-                       <div class="allowance-group flex items-center gap-2">
-                        <input type="text" placeholder="Allowance Name" value="DRA" class="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-400 transition">
-                        <input type="number" placeholder="%" value="10" class="w-24 p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-400 transition">
-                        <button onclick="removeAllowance(this)" class="bg-red-500 text-white w-9 h-9 rounded-lg flex items-center justify-center hover:bg-red-600 transition shadow-sm">&times;</button>
-                      </div>
-                    </div>
-                     <button onclick="addAllowance()" class="w-full mt-4 bg-blue-100 text-blue-800 font-semibold py-2 px-4 rounded-lg hover:bg-blue-200 transition flex items-center justify-center gap-2">
-                        <i class="fas fa-plus-circle"></i> Add Allowance
-                    </button>
-                </div>
-              </div>
-        
-              <!-- Result Section -->
-              <div id="result-section">
-                <h3 class="text-lg font-bold text-gray-800 mb-3 text-center">Calculation Result</h3>
-                <div id="result-container" class="bg-gray-50/80 p-4 rounded-lg min-h-[200px] border border-dashed">
-                    <p class="text-gray-500 text-center pt-16">Your salary breakdown will appear here.</p>
-                </div>
-                <div id="error-message" class="mt-3 text-center text-white font-semibold bg-red-500 rounded-md p-2 shadow-lg" style="display: none;"></div>
-              </div>
+  <main class="w-full max-w-lg z-10">
+      <div class="card-background p-6 sm:p-8 rounded-2xl shadow-2xl relative">
+        <nav class="mb-8 border-b border-white/10">
+            <div class="flex items-center justify-center -mb-px space-x-1 sm:space-x-2">
+                <button id="nav-salary" onclick="showCalculator('salary')" class="nav-button whitespace-nowrap py-3 px-2 sm:px-3 border-b-2 border-transparent text-sm sm:text-base font-semibold transition">Salary</button>
+                <button id="nav-tax" onclick="showCalculator('tax')" class="nav-button whitespace-nowrap py-3 px-2 sm:px-3 border-b-2 border-transparent text-sm sm:text-base font-semibold transition">Tax</button>
+                <button id="nav-zakat" onclick="showCalculator('zakat')" class="nav-button whitespace-nowrap py-3 px-2 sm:px-3 border-b-2 border-transparent text-sm sm:text-base font-semibold transition">Zakat</button>
             </div>
-            
-            <div class="mt-8 text-center space-y-4">
-                <button onclick="calculateSalary()" class="pulse-button bg-blue-600 text-white font-bold py-3 px-10 rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-4 focus:ring-blue-300 transition-all duration-300 transform hover:scale-105 shadow-xl">
-                    <i class="fas fa-calculator mr-2"></i> Calculate
-                </button>
-                <div id="scroll-button-container"></div>
-            </div>
-          </div>
+        </nav>
+        
+        <div id="calculators-wrapper">
+          <!-- The active calculator will be injected here by JavaScript -->
+        </div>
       </div>
-      <footer class="text-center text-sm text-white/70 py-4">
-          Calculator designed for Matiullah
+      
+      <footer class="text-center text-sm text-slate-500 pt-8 pb-4 flex items-center justify-center gap-3">
+          <span>Calculator designed by Matiullah</span>
+          <svg class="h-8 w-8" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+              <circle class="logo-bg" cx="50" cy="50" r="48" stroke-width="4" />
+              <text x="50" y="62" font-family="Inter, sans-serif" font-size="40" font-weight="800" text-anchor="middle" class="logo-text">MA</text>
+          </svg>
       </footer>
-  </div>
-
+  </main>
 
   <script>
-    function addAllowance() {
-      const container = document.getElementById("allowances-container");
-      const group = document.createElement("div");
-      group.className = "allowance-group flex items-center gap-2";
-      group.innerHTML = `
-        <input type="text" placeholder="Allowance Name" class="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-400 transition">
-        <input type="number" placeholder="%" class="w-24 p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-400 transition">
-        <button onclick="removeAllowance(this)" class="bg-red-500 text-white w-9 h-9 rounded-lg flex items-center justify-center hover:bg-red-600 transition shadow-sm">&times;</button>
-      `;
-      container.appendChild(group);
+    const backgroundContainer = document.getElementById('background-animation-container');
+    const calculatorsWrapper = document.getElementById('calculators-wrapper');
+
+    const calculatorHTML = {
+        salary: `
+            <div id="calculator-salary" class="calculator-page">
+                <header class="text-center mb-10"><h1 class="text-3xl font-extrabold text-white">Salary Increase</h1><p class="text-slate-400 mt-2">Estimate your new salary with allowances.</p></header>
+                <section class="space-y-6">
+                    <div><label for="basicPay" class="block text-base font-bold text-slate-300 mb-2">Current Basic Pay</label><input type="number" id="basicPay" placeholder="e.g., 50000" class="input-field w-full p-4 rounded-lg shadow-sm transition text-lg"></div>
+                    <div><h3 class="text-base font-bold text-slate-300 mb-3">Allowances (% of Basic Pay)</h3><div id="allowances-container" class="space-y-3"><div class="flex items-center gap-3"><input type="text" value="Adhoc Relief" class="input-field w-full p-3 rounded-lg transition"><input type="number" value="10" class="input-field w-24 p-3 rounded-lg transition text-center"><button onclick="this.parentElement.remove()" class="primary-button bg-red-600/80 text-white w-10 h-10 rounded-lg flex items-center justify-center hover:bg-red-600 transition shadow-sm text-lg">&times;</button></div><div class="flex items-center gap-3"><input type="text" value="DRA" class="input-field w-full p-3 rounded-lg transition"><input type="number" value="30" class="input-field w-24 p-3 rounded-lg transition text-center"><button onclick="this.parentElement.remove()" class="primary-button bg-red-600/80 text-white w-10 h-10 rounded-lg flex items-center justify-center hover:bg-red-600 transition shadow-sm text-lg">&times;</button></div></div><button onclick="addAllowance()" class="primary-button w-full mt-4 bg-sky-500/20 text-sky-300 font-semibold py-3 px-4 rounded-lg hover:bg-sky-500/40 transition flex items-center justify-center gap-2"><i class="fas fa-plus-circle"></i> Add Allowance</button></div>
+                </section>
+                <div class="text-center pt-8"><button onclick="calculateSalary()" class="primary-button calc-button text-white font-bold py-4 px-12 text-lg rounded-lg transition-all duration-300 shadow-xl"><i class="fas fa-calculator mr-2"></i> Calculate</button></div>
+                <section class="pt-8"><div id="result-container-salary" class="bg-black/20 p-6 rounded-lg min-h-[100px] border border-dashed border-slate-600"><p class="text-slate-400 text-center pt-8">Result will appear here.</p></div><div id="error-message-salary" class="mt-4 text-center text-white font-semibold bg-red-500/80 rounded-md p-3 shadow-lg" style="display: none;"></div></section>
+            </div>`,
+        tax: `
+            <div id="calculator-tax" class="calculator-page">
+                 <header class="text-center mb-10"><h1 class="text-3xl font-extrabold text-white">Income Tax</h1><p class="text-slate-400 mt-2">Estimate tax for salaried individuals (2024-25).</p></header>
+                 <section class="space-y-6"><div><label for="monthlySalary" class="block text-base font-bold text-slate-300 mb-2">Gross Monthly Salary</label><input type="number" id="monthlySalary" placeholder="e.g., 150000" class="input-field w-full p-4 rounded-lg shadow-sm transition text-lg"></div></section>
+                <div class="text-center pt-8"><button onclick="calculateTax()" class="primary-button calc-button text-white font-bold py-4 px-12 text-lg rounded-lg transition-all duration-300 shadow-xl"><i class="fas fa-calculator mr-2"></i> Calculate Tax</button></div>
+                <section class="pt-8"><div id="result-container-tax" class="bg-black/20 p-6 rounded-lg min-h-[100px] border border-dashed border-slate-600"><p class="text-slate-400 text-center pt-8">Result will appear here.</p></div><div id="error-message-tax" class="mt-4 text-center text-white font-semibold bg-red-500/80 rounded-md p-3 shadow-lg" style="display: none;"></div></section>
+            </div>`,
+        zakat: `
+            <div id="calculator-zakat" class="calculator-page">
+                 <header class="text-center mb-10"><h1 class="text-3xl font-extrabold text-white">Zakat Calculator</h1><p class="text-subheader mt-2">Calculate Zakat on your savings.</p></header>
+                 <section class="space-y-6"><div><label for="savings" class="block text-base font-bold text-label mb-2">Total Savings (held for one year)</label><input type="number" id="savings" placeholder="e.g., 500000" class="input-field w-full p-4 rounded-lg shadow-sm transition text-lg"></div></section>
+                <div class="text-center pt-8"><button onclick="calculateZakat()" class="primary-button calc-button text-white font-bold py-4 px-12 text-lg rounded-lg transition-all duration-300 shadow-xl"><i class="fas fa-calculator mr-2"></i> Calculate Zakat</button></div>
+                <section class="pt-8"><div id="result-container-zakat" class="bg-black/20 p-6 rounded-lg min-h-[100px] border border-dashed border-slate-600"><p class="text-slate-400 text-center pt-8">Result will appear here.</p></div><div id="error-message-zakat" class="mt-4 text-center text-white font-semibold bg-red-500/80 rounded-md p-3 shadow-lg" style="display: none;"></div></section>
+            </div>`
+    };
+    
+    function showCalculator(id) {
+        calculatorsWrapper.innerHTML = calculatorHTML[id];
+        document.querySelectorAll('nav button').forEach(btn => btn.classList.remove('active'));
+        document.getElementById(`nav-${id}`).classList.add('active');
+        calculatorsWrapper.querySelector('.calculator-page').classList.add('active');
     }
 
-    function removeAllowance(button) {
-      button.parentElement.remove();
+    function createStarlightBackground() {
+        let starlightHTML = `<div style="position: absolute; top: 15%; right: 15%; width: 80px; height: 80px; border-radius: 50%; box-shadow: -20px 10px 0 0px #f0f0f0; filter: drop-shadow(0 0 10px #ffffff) drop-shadow(0 0 20px #ffffff); opacity: 0.8;"></div>`; // Crescent Moon
+        for (let i = 0; i < 50; i++) {
+            starlightHTML += `<div style="position: absolute; width: ${1 + Math.random() * 2}px; height: ${1 + Math.random() * 2}px; background: white; border-radius: 50%; left: ${Math.random() * 100}%; top: ${Math.random() * 100}%; animation: twinkle ${2 + Math.random() * 3}s linear infinite; animation-delay: ${Math.random() * 5}s;"></div>`;
+        }
+        backgroundContainer.innerHTML = `<div>${starlightHTML}</div>`;
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+        createStarlightBackground();
+        showCalculator('salary');
+    });
+    
+    function addAllowance() {
+      const container = document.getElementById("allowances-container");
+      const div = document.createElement("div");
+      div.className = "flex items-center gap-3";
+      div.innerHTML = `<input type="text" placeholder="Allowance Name" class="input-field w-full p-3 rounded-lg transition"><input type="number" placeholder="%" class="input-field w-24 p-3 rounded-lg transition text-center"><button onclick="this.parentElement.remove()" class="primary-button bg-red-600/80 text-white w-10 h-10 rounded-lg flex items-center justify-center hover:bg-red-600 transition shadow-sm text-lg">&times;</button>`;
+      container.appendChild(div); div.querySelector('input').focus();
     }
     
     function calculateSalary() {
-      const basicPayInput = document.getElementById("basicPay");
-      const basicPay = parseFloat(basicPayInput.value);
-      const resultContainer = document.getElementById("result-container");
-      const errorDiv = document.getElementById("error-message");
-      const scrollBtnContainer = document.getElementById('scroll-button-container');
-
-      // Clear previous results and errors
-      resultContainer.innerHTML = '<p class="text-gray-500 text-center pt-16">Your salary breakdown will appear here.</p>';
-      resultContainer.classList.remove('border-green-300', 'bg-green-50/80');
-      errorDiv.style.display = 'none';
-      scrollBtnContainer.innerHTML = ''; // Clear scroll button
-      basicPayInput.classList.remove('border-red-500');
-
-      if (isNaN(basicPay) || basicPay <= 0) {
-        errorDiv.innerText = "Please enter a valid Basic Pay amount.";
-        errorDiv.style.display = 'block';
-        basicPayInput.classList.add('border-red-500');
-        basicPayInput.focus();
-        return;
-      }
-
-      const allowanceGroups = document.querySelectorAll(".allowance-group");
-      let totalAllowanceAmount = 0;
-      let allowanceDetails = '';
-
-      allowanceGroups.forEach(group => {
-        const nameInput = group.querySelector("input[type='text']");
-        const percentInput = group.querySelector("input[type='number']");
-        
-        const name = nameInput.value.trim() || "Unnamed Allowance";
-        const percent = parseFloat(percentInput.value);
-
-        if (!isNaN(percent) && percent > 0) {
-          const allowanceAmount = (basicPay * percent) / 100;
-          totalAllowanceAmount += allowanceAmount;
-          allowanceDetails += `
-            <div class="flex justify-between items-center text-sm">
-              <p class="text-gray-600">${name} (${percent}%)</p>
-              <p class="font-mono text-gray-800">${allowanceAmount.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}</p>
-            </div>
-          `;
-        }
-      });
-      
-      const newGrossSalary = basicPay + totalAllowanceAmount;
-      
-      resultContainer.classList.add('border-green-300', 'bg-green-50/80');
-      resultContainer.innerHTML = `
-        <div class="result-card space-y-3">
-            <div class="flex justify-between items-center pb-2 border-b border-gray-300">
-                <p class="font-semibold text-gray-700">Basic Pay</p>
-                <p class="font-bold font-mono text-lg text-gray-900">${basicPay.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}</p>
-            </div>
-            
-            <div class="space-y-2 py-1">
-                <p class="font-semibold text-gray-700 text-sm">Allowances:</p>
-                ${allowanceDetails || '<p class="text-gray-500 text-xs text-center">No valid allowances entered.</p>'}
-            </div>
-
-            <div class="flex justify-between items-center pt-2 border-t border-gray-300">
-                <p class="font-semibold text-gray-700">Total Increase</p>
-                <p class="font-bold font-mono text-lg text-green-600">+${totalAllowanceAmount.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}</p>
-            </div>
-            
-            <div class="bg-blue-600 text-white p-3 rounded-lg mt-3 shadow-lg">
-                <div class="flex justify-between items-center">
-                    <p class="font-bold text-lg">New Gross Salary</p>
-                    <p class="font-extrabold font-mono text-xl">Rs. ${newGrossSalary.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}</p>
-                </div>
-            </div>
-        </div>
-      `;
-
-      // Add scroll to result button
-      scrollBtnContainer.innerHTML = `
-        <a href="#result-section" class="inline-block bg-gray-700 text-white font-semibold py-2 px-4 rounded-lg hover:bg-gray-800 transition">
-            <i class="fas fa-arrow-down mr-2"></i> Scroll to Result
-        </a>
-      `;
+        const basicPayInput = document.getElementById("basicPay"); const basicPay = parseFloat(basicPayInput.value);
+        const resultContainer = document.getElementById("result-container-salary"); const errorDiv = document.getElementById("error-message-salary");
+        resultContainer.innerHTML = '<p class="text-slate-400 text-center pt-8">Result will appear here.</p>'; resultContainer.classList.remove('border-green-400'); errorDiv.style.display = 'none'; basicPayInput.classList.remove('border-red-500');
+        if (isNaN(basicPay) || basicPay <= 0) { errorDiv.innerText = "Please enter a valid Basic Pay."; errorDiv.style.display = 'block'; basicPayInput.classList.add('border-red-500'); basicPayInput.focus(); return; }
+        const allowanceGroups = document.querySelectorAll("#allowances-container > div"); let totalAllowanceAmount = 0, allowanceDetails = '';
+        allowanceGroups.forEach(group => { const name = (group.querySelector("input[type='text']").value.trim() || "Unnamed"); const percent = parseFloat(group.querySelector("input[type='number']").value); if (!isNaN(percent) && percent > 0) { const amount = (basicPay * percent) / 100; totalAllowanceAmount += amount; allowanceDetails += `<div class="flex justify-between items-center text-sm text-slate-300"><p>${name} (${percent}%)</p><p class="font-mono">${amount.toLocaleString(undefined, {minimumFractionDigits: 2})}</p></div>`; } });
+        const newGrossSalary = basicPay + totalAllowanceAmount; resultContainer.classList.add('border-green-400');
+        resultContainer.innerHTML = `<div class="space-y-4"><div class="flex justify-between items-center pb-3 border-b border-slate-600"><p class="font-semibold text-slate-300">Basic Pay</p><p class="font-bold font-mono text-lg text-white">${basicPay.toLocaleString(undefined, {minimumFractionDigits: 2})}</p></div><div class="space-y-2 py-2"><p class="font-semibold text-slate-300 text-sm mb-2">Allowances:</p>${allowanceDetails || '<p class="text-slate-400 text-xs text-center">No allowances entered.</p>'}</div><div class="flex justify-between items-center pt-3 border-t border-slate-600"><p class="font-semibold text-slate-300">Total Increase</p><p class="font-bold font-mono text-lg text-green-400">+${totalAllowanceAmount.toLocaleString(undefined, {minimumFractionDigits: 2})}</p></div><div class="bg-black/30 text-white p-4 rounded-lg mt-3 shadow-lg"><div class="flex justify-between items-center"><p class="font-bold text-xl text-white">New Gross Salary</p><p class="font-extrabold font-mono text-2xl">Rs. ${newGrossSalary.toLocaleString(undefined, {minimumFractionDigits: 2})}</p></div></div></div>`;
     }
+    function calculateTax() {
+        const salaryInput = document.getElementById("monthlySalary"); const monthlySalary = parseFloat(salaryInput.value);
+        const resultContainer = document.getElementById("result-container-tax"); const errorDiv = document.getElementById("error-message-tax");
+        resultContainer.innerHTML = '<p class="text-slate-400 text-center pt-8">Result will appear here.</p>'; resultContainer.classList.remove('border-green-400'); errorDiv.style.display = 'none'; salaryInput.classList.remove('border-red-500');
+        if (isNaN(monthlySalary) || monthlySalary <= 0) { errorDiv.innerText = "Please enter a valid monthly salary."; errorDiv.style.display = 'block'; salaryInput.classList.add('border-red-500'); salaryInput.focus(); return; }
+        const annualSalary = monthlySalary * 12; let annualTax = 0;
+        if (annualSalary > 4100000) { annualTax = 690000 + (annualSalary - 4100000) * 0.35; } else if (annualSalary > 3200000) { annualTax = 430000 + (annualSalary - 3200000) * 0.30; } else if (annualSalary > 2200000) { annualTax = 180000 + (annualSalary - 2200000) * 0.25; } else if (annualSalary > 1200000) { annualTax = 30000 + (annualSalary - 1200000) * 0.15; } else if (annualSalary > 600000) { annualTax = (annualSalary - 600000) * 0.05; }
+        const monthlyTax = annualTax / 12; resultContainer.classList.add('border-green-400');
+        resultContainer.innerHTML = `<div class="space-y-4 text-slate-300"><div class="flex justify-between"><p>Annual Salary:</p><p class="font-mono">Rs. ${annualSalary.toLocaleString(undefined, {minimumFractionDigits: 2})}</p></div><div class="flex justify-between"><p>Annual Tax:</p><p class="font-mono text-red-400">- Rs. ${annualTax.toLocaleString(undefined, {minimumFractionDigits: 2})}</p></div><div class="bg-black/30 text-white p-4 rounded-lg mt-3 shadow-lg"><div class="flex justify-between items-center"><p class="font-bold text-lg">Monthly Tax Deduction</p><p class="font-extrabold font-mono text-xl">Rs. ${monthlyTax.toLocaleString(undefined, {minimumFractionDigits: 2})}</p></div></div><p class="text-xs text-slate-500 text-center pt-2">Disclaimer: Based on FBR slabs for salaried individuals (2024-25). Estimate only.</p></div>`;
+    }
+    function calculateZakat() {
+        const savingsInput = document.getElementById("savings"); const savings = parseFloat(savingsInput.value);
+        const resultContainer = document.getElementById("result-container-zakat"); const errorDiv = document.getElementById("error-message-zakat");
+        const nisabThreshold = 179689; 
+        resultContainer.innerHTML = '<p class="text-slate-400 text-center pt-8">Result will appear here.</p>'; resultContainer.classList.remove('border-green-400'); errorDiv.style.display = 'none'; savingsInput.classList.remove('border-red-500');
+        if (isNaN(savings) || savings < 0) { errorDiv.innerText = "Please enter a valid savings amount."; errorDiv.style.display = 'block'; savingsInput.classList.add('border-red-500'); savingsInput.focus(); return; }
+        let zakat = 0, message = '';
+        if (savings >= nisabThreshold) { zakat = savings * 0.025; message = `<div class="bg-black/30 text-white p-4 rounded-lg mt-3 shadow-lg"><div class="flex justify-between items-center"><p class="font-bold text-lg">Zakat Payable</p><p class="font-extrabold font-mono text-xl text-green-400">Rs. ${zakat.toLocaleString(undefined, {minimumFractionDigits: 2})}</p></div></div>`; } else { message = `<div class="text-center p-4"><p class="text-slate-300">Your savings are below the approximate Nisab threshold of Rs. ${nisabThreshold.toLocaleString()}.</p><p class="text-slate-400 text-xs mt-2">No Zakat is due.</p></div>`; }
+        resultContainer.classList.add('border-green-400');
+        resultContainer.innerHTML = `${message}<p class="text-xs text-slate-500 text-center pt-4">Disclaimer: Nisab value is an approximation. Please verify with a reliable source.</p>`;
+    }
+
   </script>
 </body>
 </html>
